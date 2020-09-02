@@ -58,65 +58,65 @@ class Game extends React.Component{
         console.log(y)
         let curSquare = this.state.gameBoard[x][y];
         let curPiece = curSquare.piece;
-        if(curPiece == 'br' || curPiece == 'wr'){
+        if(curPiece === 'br' || curPiece === 'wr'){
             let i = x-1;
             while(i>=0){
-                if(this.state.gameBoard[i][y].piece.charAt(0) == curPiece.charAt(0)){
+                if(this.state.gameBoard[i][y].piece.charAt(0) === curPiece.charAt(0)){
                     break;
                 }
-                else if(this.state.gameBoard[i][y].piece.charAt(0) == 'n'){
+                else if(this.state.gameBoard[i][y].piece.charAt(0) === 'n'){
                     ret.push(8*i+y)
                     i--;
                 }
-                else if(this.state.gameBoard[i][y].piece.charAt(1) != 'k'){
+                else if(this.state.gameBoard[i][y].piece.charAt(1) !== 'k'){
                     ret.push(8*i+y)
                     break;
                 }
             }
             i = x+1;
             while(i<8){
-                if(this.state.gameBoard[i][y].piece.charAt(0) == curPiece.charAt(0)){
+                if(this.state.gameBoard[i][y].piece.charAt(0) === curPiece.charAt(0)){
                     break;
                 }
-                else if(this.state.gameBoard[i][y].piece.charAt(0) == 'n'){
+                else if(this.state.gameBoard[i][y].piece.charAt(0) === 'n'){
                     ret.push(8*i+y)
                     i++;
                 }
-                else if(this.state.gameBoard[i][y].piece.charAt(1) != 'k'){
+                else if(this.state.gameBoard[i][y].piece.charAt(1) !== 'k'){
                     ret.push(8*i+y)
                     break;
                 }
             }
             i = y-1;
             while(i>=0){
-                if(this.state.gameBoard[x][i].piece.charAt(0) == curPiece.charAt(0)){
+                if(this.state.gameBoard[x][i].piece.charAt(0) === curPiece.charAt(0)){
                     break;
                 }
-                else if(this.state.gameBoard[x][i].piece.charAt(0) == 'n'){
+                else if(this.state.gameBoard[x][i].piece.charAt(0) === 'n'){
                     ret.push(8*x+i)
                     i--;
                 }
-                else if(this.state.gameBoard[x][i].piece.charAt(1) != 'k'){
+                else if(this.state.gameBoard[x][i].piece.charAt(1) !== 'k'){
                     ret.push(8*x+i)
                     break;
                 }
             }
             i=y+1;
             while(i<8){
-                if(this.state.gameBoard[x][i].piece.charAt(0) == curPiece.charAt(0)){
+                if(this.state.gameBoard[x][i].piece.charAt(0) === curPiece.charAt(0)){
                     break;
                 }
-                else if(this.state.gameBoard[x][i].piece.charAt(0) == 'n'){
+                else if(this.state.gameBoard[x][i].piece.charAt(0) === 'n'){
                     ret.push(8*x+i)
                     i++;
                 }
-                else if(this.state.gameBoard[i][y].piece.charAt(1) != 'k'){
+                else if(this.state.gameBoard[i][y].piece.charAt(1) !== 'k'){
                     ret.push(8*x+i)
                     break;
                 }
             }
         }
-        else if(curPiece == 'bk' || curPiece == 'wk'){
+        else if(curPiece === 'bk' || curPiece === 'wk'){
             if(x+1<8){
                 if(y+1<8 && this.state.gameBoard[x+1][y+1].piece.charAt(0) !== this.state.gameBoard[x][y].piece.charAt(0)){
                     ret.push(8*(x+1)+y+1)
@@ -146,11 +146,11 @@ class Game extends React.Component{
                 ret.push(8*x+y-1)
             }
         }
-        else if(curPiece == 'bp'){
-            if(x==1){
+        else if(curPiece === 'bp'){
+            if(x===1){
                 let i = x+1;
                 while(i<4){
-                    if(this.state.gameBoard[i][y].piece.charAt(0) == 'n'){
+                    if(this.state.gameBoard[i][y].piece.charAt(0) === 'n'){
                         ret.push(8*i+y)
                         i++;
                     }
@@ -162,18 +162,18 @@ class Game extends React.Component{
             else if(x<7 && this.state.gameBoard[x+1][y].piece === 'na'){
                 ret.push(8*(x+1)+y)
             }
-            if(x<7&&((y>0 && this.state.gameBoard[x+1][y-1].piece.charAt(0) !== this.state.gameBoard[x][y] && this.state.gameBoard[x+1][y-1].piece.charAt(0) !== 'n'))){
+            if(x<7&&((y>0 && this.state.gameBoard[x+1][y-1].piece.charAt(0) !== this.state.gameBoard[x][y].piece.charAt(0) && this.state.gameBoard[x+1][y-1].piece.charAt(0) !== 'n'))){
                 ret.push(8*(x+1)+y-1)
             }
-            if(x<7&&(y<7 && this.state.gameBoard[x+1][y+1].piece.charAt(0) !== this.state.gameBoard[x][y] && this.state.gameBoard[x+1][y+1].piece.charAt(0) !== 'n')){
+            if(x<7&&(y<7 && this.state.gameBoard[x+1][y+1].piece.charAt(0) !== this.state.gameBoard[x][y].piece.charAt(0) && this.state.gameBoard[x+1][y+1].piece.charAt(0) !== 'n')){
                 ret.push(8*(x+1)+y+1)
             }
         }
-        else if(curPiece == 'wp'){
-            if(x==6){
+        else if(curPiece === 'wp'){
+            if(x===6){
                 let i = x-1;
                 while(i>3){
-                    if(this.state.gameBoard[i][y].piece.charAt(0) == 'n'){
+                    if(this.state.gameBoard[i][y].piece.charAt(0) === 'n'){
                         ret.push(8*i+y)
                         i--;
                     }
@@ -185,21 +185,203 @@ class Game extends React.Component{
             else if(x>0 && this.state.gameBoard[x-1][y].piece === 'na'){
                 ret.push(8*(x-1)+y)
             }
-            if(x>0&&((y>0 && this.state.gameBoard[x-1][y-1].piece.charAt(0) !== this.state.gameBoard[x][y] && this.state.gameBoard[x-1][y-1].piece.charAt(0) !== 'n'))){
+            if(x>0&&((y>0 && this.state.gameBoard[x-1][y-1].piece.charAt(0) !== this.state.gameBoard[x][y].piece.charAt(0) && this.state.gameBoard[x-1][y-1].piece.charAt(0) !== 'n'))){
                 ret.push(8*(x-1)+y-1)
             }
-            if(x>0&&(y<7 && this.state.gameBoard[x-1][y+1].piece.charAt(0) !== this.state.gameBoard[x][y] && this.state.gameBoard[x-1][y+1].piece.charAt(0) !== 'n')){
+            if(x>0&&(y<7 && this.state.gameBoard[x-1][y+1].piece.charAt(0) !== this.state.gameBoard[x][y].piece.charAt(0) && this.state.gameBoard[x-1][y+1].piece.charAt(0) !== 'n')){
                 ret.push(8*(x-1)+y+1)
             }
         }
-        else if(curPiece == 'bb' || curPiece == 'wb'){
+        else if(curPiece === 'bb' || curPiece === 'wb'){
+            let i = x+1;
+            let j = y+1
+            while(i<8 && j<8 ){
+                if(this.state.gameBoard[i][j].piece.charAt(0) === this.state.gameBoard[x][y].piece.charAt(0)){
+                    break;
+                }
+                ret.push(8*(i)+j);
+                if(this.state.gameBoard[i][j].piece.charAt(0) !== 'n'){
+                    break;
+                }
+                i++;
+                j++;
+            }
+            i = x+1;
+            j = y-1;
+            while(i<8 && j>=0){
+                if(this.state.gameBoard[i][j].piece.charAt(0) === this.state.gameBoard[x][y].piece.charAt(0)){
+                    break;
+                }
+                ret.push(8*i+j);
+                if(this.state.gameBoard[i][j].piece.charAt(0) !== 'n'){
+                    break;
+                }
+                i++;
+                j--;
+            }
+            i = x-1;
+            j = y-1;
+            while(i>=0 && j>=0){
+                if(this.state.gameBoard[i][j].piece.charAt(0) === this.state.gameBoard[x][y].piece.charAt(0)){
+                    break;
+                }
+                ret.push(8*i+j);
+                if(this.state.gameBoard[i][j].piece.charAt(0) !== 'n'){
+                    break;
+                }
+                i--;
+                j--;
+            }
+            i=x-1;
+            j=y+1;
+            while(i>=0 && j<8){
+                if(this.state.gameBoard[i][j].piece.charAt(0) === this.state.gameBoard[x][y].piece.charAt(0)){
+                    break;
+                }
+                ret.push(8*i+j);
+                if(this.state.gameBoard[i][j].piece.charAt(0) !== 'n'){
+                    break;
+                }
+                i--;
+                j++;
+            }
+        }
+        else if(curPiece === 'bq' || curPiece === 'wq'){
+            let i = x-1;
+            while(i>=0){
+                if(this.state.gameBoard[i][y].piece.charAt(0) === curPiece.charAt(0)){
+                    break;
+                }
+                else if(this.state.gameBoard[i][y].piece.charAt(0) === 'n'){
+                    ret.push(8*i+y)
+                    i--;
+                }
+                else if(this.state.gameBoard[i][y].piece.charAt(1) !== 'k'){
+                    ret.push(8*i+y)
+                    break;
+                }
+            }
+            i = x+1;
+            while(i<8){
+                if(this.state.gameBoard[i][y].piece.charAt(0) === curPiece.charAt(0)){
+                    break;
+                }
+                else if(this.state.gameBoard[i][y].piece.charAt(0) === 'n'){
+                    ret.push(8*i+y)
+                    i++;
+                }
+                else if(this.state.gameBoard[i][y].piece.charAt(1) !== 'k'){
+                    ret.push(8*i+y)
+                    break;
+                }
+            }
+            i = y-1;
+            while(i>=0){
+                if(this.state.gameBoard[x][i].piece.charAt(0) === curPiece.charAt(0)){
+                    break;
+                }
+                else if(this.state.gameBoard[x][i].piece.charAt(0) === 'n'){
+                    ret.push(8*x+i)
+                    i--;
+                }
+                else if(this.state.gameBoard[x][i].piece.charAt(1) !== 'k'){
+                    ret.push(8*x+i)
+                    break;
+                }
+            }
+            i=y+1;
+            while(i<8){
+                if(this.state.gameBoard[x][i].piece.charAt(0) === curPiece.charAt(0)){
+                    break;
+                }
+                else if(this.state.gameBoard[x][i].piece.charAt(0) === 'n'){
+                    ret.push(8*x+i)
+                    i++;
+                }
+                else if(this.state.gameBoard[i][y].piece.charAt(1) !== 'k'){
+                    ret.push(8*x+i)
+                    break;
+                }
+            }
+            i = x+1;
+            let j = y+1
+            while(i<8 && j<8 ){
+                if(this.state.gameBoard[i][j].piece.charAt(0) === this.state.gameBoard[x][y].piece.charAt(0)){
+                    break;
+                }
+                ret.push(8*(i)+j);
+                if(this.state.gameBoard[i][j].piece.charAt(0) !== 'n'){
+                    break;
+                }
+                i++;
+                j++;
+            }
+            i = x+1;
+            j = y-1;
+            while(i<8 && j>=0){
+                if(this.state.gameBoard[i][j].piece.charAt(0) === this.state.gameBoard[x][y].piece.charAt(0)){
+                    break;
+                }
+                ret.push(8*i+j);
+                if(this.state.gameBoard[i][j].piece.charAt(0) !== 'n'){
+                    break;
+                }
+                i++;
+                j--;
+            }
+            i = x-1;
+            j = y-1;
+            while(i>=0 && j>=0){
+                if(this.state.gameBoard[i][j].piece.charAt(0) === this.state.gameBoard[x][y].piece.charAt(0)){
+                    break;
+                }
+                ret.push(8*i+j);
+                if(this.state.gameBoard[i][j].piece.charAt(0) !== 'n'){
+                    break;
+                }
+                i--;
+                j--;
+            }
+            i=x-1;
+            j=y+1;
+            while(i>=0 && j<8){
+                if(this.state.gameBoard[i][j].piece.charAt(0) === this.state.gameBoard[x][y].piece.charAt(0)){
+                    break;
+                }
+                ret.push(8*i+j);
+                if(this.state.gameBoard[i][j].piece.charAt(0) !== 'n'){
+                    break;
+                }
+                i--;
+                j++;
+            }
 
         }
-        else if(curPiece == 'bq' || curPiece == 'wq'){
-
-        }
-        else if(curPiece == 'bn' || curPiece == 'wn'){
-
+        else if(curPiece === 'bn' || curPiece === 'wn'){
+            if(x+2<8 && y+1 < 8 && this.state.gameBoard[x+2][y+1].piece.charAt(0) !== this.state.gameBoard[x][y].piece.charAt(0)){
+                ret.push(8*(x+2)+y+1);
+            }
+            if(x+2<8 && y-1>=0 &&  this.state.gameBoard[x+2][y-1].piece.charAt(0) !== this.state.gameBoard[x][y].piece.charAt(0)){
+                ret.push(8*(x+2)+y-1);
+            }
+            if(x+1<8 && y+2 < 8 && this.state.gameBoard[x+1][y+2].piece.charAt(0) !== this.state.gameBoard[x][y].piece.charAt(0)){
+                ret.push(8*(x+1)+y+2);
+            }
+            if(x+1<8 && y-2 >=0 && this.state.gameBoard[x+1][y-2].piece.charAt(0) !== this.state.gameBoard[x][y].piece.charAt(0)){
+                ret.push(8*(x+1)+y-2);
+            }
+            if(x-2>=0 && y+1 < 8 && this.state.gameBoard[x-2][y+1].piece.charAt(0) !== this.state.gameBoard[x][y].piece.charAt(0)){
+                ret.push(8*(x-2)+y+1);
+            }
+            if(x-2>=0 && y-1>=0 &&  this.state.gameBoard[x-2][y-1].piece.charAt(0) !== this.state.gameBoard[x][y].piece.charAt(0)){
+                ret.push(8*(x-2)+y-1);
+            }
+            if(x-1>=0 && y+2 < 8 && this.state.gameBoard[x-1][y+2].piece.charAt(0) !== this.state.gameBoard[x][y].piece.charAt(0)){
+                ret.push(8*(x-1)+y+2);
+            }
+            if(x-1>=0 && y-2 >=0 && this.state.gameBoard[x-1][y-2].piece.charAt(0) !== this.state.gameBoard[x][y].piece.charAt(0)){
+                ret.push(8*(x-1)+y-2);
+            }
         }
         return ret;
     }
