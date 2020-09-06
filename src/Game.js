@@ -68,7 +68,7 @@ class Game extends React.Component{
                     ret.push(8*i+y)
                     i--;
                 }
-                else if(this.state.gameBoard[i][y].piece.charAt(1) !== 'k'){
+                else if(this.state.gameBoard[i][y].piece.charAt(0) !== (this.state.turn.toLowerCase().charAt(0))){
                     ret.push(8*i+y)
                     break;
                 }
@@ -82,7 +82,7 @@ class Game extends React.Component{
                     ret.push(8*i+y)
                     i++;
                 }
-                else if(this.state.gameBoard[i][y].piece.charAt(1) !== 'k'){
+                else if(this.state.gameBoard[i][y].piece.charAt(0) !== (this.state.turn.toLowerCase().charAt(0))){
                     ret.push(8*i+y)
                     break;
                 }
@@ -96,7 +96,7 @@ class Game extends React.Component{
                     ret.push(8*x+i)
                     i--;
                 }
-                else if(this.state.gameBoard[x][i].piece.charAt(1) !== 'k'){
+                else if(this.state.gameBoard[i][y].piece.charAt(0)  !== (this.state.turn.toLowerCase().charAt(0))){
                     ret.push(8*x+i)
                     break;
                 }
@@ -110,7 +110,7 @@ class Game extends React.Component{
                     ret.push(8*x+i)
                     i++;
                 }
-                else if(this.state.gameBoard[i][y].piece.charAt(1) !== 'k'){
+                else if(this.state.gameBoard[i][y].piece.charAt(0) !== (this.state.turn.toLowerCase().charAt(0))){
                     ret.push(8*x+i)
                     break;
                 }
@@ -386,6 +386,119 @@ class Game extends React.Component{
         return ret;
     }
 
+    indexToPosition(index){
+        let ret = ""
+        switch(index%8){
+            case 0: ret += "a";break;
+            case 1: ret += "b";break;
+            case 2: ret += "c";break;
+            case 3: ret += "d"; break;
+            case 4: ret += "e";break;
+            case 5: ret+="f";break;
+            case 6: ret+="g";break;
+            case 7: ret += "h";break;
+            default: ret +="Error";break;
+        }
+        switch(Math.floor(index/8)){
+            case 0: ret += "8";break;
+            case 1: ret+="7";break;
+            case 2:ret+="6";break;
+            case 3:ret+="5";break;
+            case 4:ret+="4";break;
+            case 5:ret+="3";break;
+            case 6:ret+="2";break;
+            case 7:ret+="1";break;
+        }
+        return ret
+    }
+
+    getPiece(st){
+        let ret = ""
+        switch(st){
+            case 'p':break;
+            default: ret += st.toUpperCase();break;
+        }
+        return ret;
+    }
+
+    getAttackSquares(piece, num){
+        let ret = []
+        let x = Math.floor(num/8)
+        let y = num%8
+        if(piece == 'b'){
+
+        }
+        if(piece == 'p'){
+
+        }
+        if(piece == 'k'){
+
+        }
+        if(piece == 'n'){
+
+        }
+        if(piece == 'r'){
+            console.log("adsfadsfaDS");
+            let i = x-1;
+            while(i>=0){
+                console.log(this.state.gameBoard[i][y].piece.charAt(1) + ", " + piece.charAt(0) + "; " + this.state.gameBoard[i][y].piece.charAt(0) + ", " + this.state.turn.toLowerCase().charAt(0))
+                if(this.state.gameBoard[i][y].piece.charAt(1) === piece.charAt(0) && this.state.gameBoard[i][y].piece.charAt(0) === this.state.turn.toLowerCase().charAt(0)){
+                    ret.push(8*i+y)
+                    break;
+                }
+                else if(this.state.gameBoard[i][y].piece.charAt(0) === 'n'){
+                    i--;
+                }
+                else{
+                    break;
+                }
+            }
+            i = x+1;
+            while(i<8){
+                if(this.state.gameBoard[i][y].piece.charAt(1) === piece.charAt(0) && this.state.gameBoard[i][y].piece.charAt(0) === this.state.turn.toLowerCase().charAt(0)){
+                    ret.push(8*i+y)
+                    break;
+                }
+                else if(this.state.gameBoard[i][y].piece.charAt(0) === 'n'){
+                    i++;
+                }
+                else {
+                    break;
+                }
+            }
+            i = y-1;
+            while(i>=0){
+                if(this.state.gameBoard[x][i].piece.charAt(1) === piece.charAt(0) && this.state.gameBoard[x][i].piece.charAt(0) === this.state.turn.toLowerCase().charAt(0)){
+                    ret.push(8*x+i)
+                    break;
+                }
+                else if(this.state.gameBoard[x][i].piece.charAt(0) === 'n'){
+                    i--;
+                }
+                else {
+                    break;
+                }
+            }
+            i=y+1;
+            while(i<8){
+                if(this.state.gameBoard[x][i].piece.charAt(1) === piece.charAt(0) && this.state.gameBoard[x][i].piece.charAt(0) === this.state.turn.toLowerCase().charAt(0)){
+                    ret.push(8*x+i)
+                    break;
+                }
+                else if(this.state.gameBoard[x][i].piece.charAt(0) === 'n'){
+                    i++;
+                }
+                else {
+                    break;
+                }
+            }
+        }
+        if(piece =='q'){
+
+        }
+        return ret;
+    }
+
     handleClick(num){
         this.setState(prevState => {
             /*const newBoard = prevState.gameBoard.map(row => {
@@ -424,6 +537,15 @@ class Game extends React.Component{
                 }
                 else if(prevState.gameBoard[Math.floor(num/8)][num%8].move){
                     let pieceToMove = newBoard[Math.floor(this.state.selected/8)][this.state.selected%8].piece
+                    let capture = (newBoard[Math.floor(num/8)][num%8].piece == "na")?"":"x"
+                    console.log(pieceToMove.substr(1,2));
+                    let attackPos = this.getAttackSquares(pieceToMove.substr(1,2), num)
+                    console.log(attackPos)
+                    let notation = this.getPiece(pieceToMove.substr(1,2))
+                    if(attackPos.length >1){
+                        notation += this.indexToPosition(this.state.selected)
+                    }
+                    console.log(notation + capture +  this.indexToPosition(num))
                     newBoard[Math.floor(this.state.selected/8)][this.state.selected%8].piece = "na"
                     newBoard[Math.floor(num/8)][num%8].piece = pieceToMove
                     nextTurn = prevState.turn==="White"?"Black":"White"
