@@ -25,6 +25,8 @@ class Game extends React.Component{
             gameBoard: tempBoard,
             turn: "White",
             selected: -1,
+            enPassant: false,
+            ep: -1,
         }
         this.handleClick = this.handleClick.bind(this)
         this.computeSquares = this.computeSquares.bind(this)
@@ -168,6 +170,9 @@ class Game extends React.Component{
             if(x<7&&(y<7 && this.state.gameBoard[x+1][y+1].piece.charAt(0) !== this.state.gameBoard[x][y].piece.charAt(0) && this.state.gameBoard[x+1][y+1].piece.charAt(0) !== 'n')){
                 ret.push(8*(x+1)+y+1)
             }
+            if(this.state.enPassant && x===4 && (y-1===this.state.ep || y+1 === this.state.ep)){
+                ret.push(8*(x+1)+this.state.ep);
+            }
         }
         else if(curPiece === 'wp'){
             if(x===6){
@@ -190,6 +195,10 @@ class Game extends React.Component{
             }
             if(x>0&&(y<7 && this.state.gameBoard[x-1][y+1].piece.charAt(0) !== this.state.gameBoard[x][y].piece.charAt(0) && this.state.gameBoard[x-1][y+1].piece.charAt(0) !== 'n')){
                 ret.push(8*(x-1)+y+1)
+            }
+            if(this.state.enPassant && x===3 && (y-1===this.state.ep || y+1 === this.state.ep)){
+                let temp = 0;
+                ret.push(8*(x-1)+this.state.ep);
             }
         }
         else if(curPiece === 'bb' || curPiece === 'wb'){
@@ -438,7 +447,6 @@ class Game extends React.Component{
 
         }
         if(piece == 'r'){
-            console.log("adsfadsfaDS");
             let i = x-1;
             while(i>=0){
                 console.log(this.state.gameBoard[i][y].piece.charAt(1) + ", " + piece.charAt(0) + "; " + this.state.gameBoard[i][y].piece.charAt(0) + ", " + this.state.turn.toLowerCase().charAt(0))
@@ -509,9 +517,10 @@ class Game extends React.Component{
                     return element
                 })
             })*/
-            //const newBoard = prevState.gameBoard.slice(0,8);
-            console.log(this.state.gameBoard)
+            console.log(this.state)
             const newBoard = []
+            let enPass = this.state.enPassant;
+            let epNew = this.state.ep;
             for(let i = 0; i<8; i++){
                 newBoard.push([])
                 for(let j  = 0; j<8; j++){
@@ -537,10 +546,28 @@ class Game extends React.Component{
                 }
                 else if(prevState.gameBoard[Math.floor(num/8)][num%8].move){
                     let pieceToMove = newBoard[Math.floor(this.state.selected/8)][this.state.selected%8].piece
+                    enPass = false;
+                    epNew = "na";
                     let capture = (newBoard[Math.floor(num/8)][num%8].piece == "na")?"":"x"
-                    console.log(pieceToMove.substr(1,2));
                     let attackPos = this.getAttackSquares(pieceToMove.substr(1,2), num)
-                    console.log(attackPos)
+                    enPass = (Math.floor(this.state.selected/8)===1 && Math.floor(num/8) === 3 && this.state.turn === "Black");
+                    enPass = enPass || (Math.floor(this.state.selected/8)===6 && Math.floor(num/8) === 4 && this.state.turn==="White");
+                    enPass = enPass && pieceToMove.charAt(1)==='p';
+                    if(enPass){
+                        epNew = num%8;
+                    }
+                    console.log(this.state)
+                    console.log("asdgasdgads");
+                    if(this.state.enPassant && (num%8)===this.state.ep && pieceToMove.charAt(1)==='p'){
+                        if(this.state.turn === "Black"&&Math.floor(num/8)===5){
+                            newBoard[Math.floor(num/8)-1][num%8].piece = "na"
+                            console.log(Math.floor(num/8)-1 + ", " + (num%8))
+                        }
+                        else if(this.state.turn==="White"&&Math.floor(num/8)===2){
+                            newBoard[Math.floor(num/8)+1][num%8].piece = "na"
+                            console.log(Math.floor(num/8)+1 + ", " + (num%8))
+                        }
+                    }
                     let notation = this.getPiece(pieceToMove.substr(1,2))
                     if(attackPos.length >1){
                         notation += this.indexToPosition(this.state.selected)
@@ -551,10 +578,13 @@ class Game extends React.Component{
                     nextTurn = prevState.turn==="White"?"Black":"White"
                 }
             }
+            console.log(enPass + ", " + epNew);
             return{
                 gameBoard: newBoard,
                 turn: nextTurn,
                 selected: newSelected,
+                enPassant: enPass,
+                ep: epNew,
             }
         });
     }
