@@ -30,7 +30,22 @@ ol, ul {
     align-content:center;
     display:flex;
     flex-direction:column;
+    width:120px;
+}
 
+.moves h3{
+    text-align:center;
+}
+
+.move-row{
+    display:flex;
+    justify-content:space-between;
+}
+
+.move-button{
+    background: none;
+    align-items:center;
+    text-align:center;
 }
 
 .white{
