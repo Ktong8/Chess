@@ -21,6 +21,18 @@ ol, ul {
     margin-bottom: 10px;
 }
 
+.board-move-container{
+    display:flex;
+    flex-direction:column;
+}
+
+.moves{
+    align-content:center;
+    display:flex;
+    flex-direction:column;
+
+}
+
 .white{
     background: #fff;
     border: 1px solid #999;
