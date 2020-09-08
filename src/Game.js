@@ -104,7 +104,7 @@ class Game extends React.Component{
             }
             console.log("asdfads:" + move.iden)
             let newBoard = prevState.gameBoard.slice(0,move.iden)
-            let newTurn = move.iden == 0?"White":"Black"
+            let newTurn = move.iden === 0?"White":"Black"
             let newenPassant = move.enPass
             let newEp = move.ep
             let newMoves = prevState.moves.slice(0,Math.ceil((move.iden-1)/2))
@@ -268,7 +268,6 @@ class Game extends React.Component{
                 ret.push(8*(x-1)+y+1)
             }
             if(this.state.enPassant && x===3 && (y-1===this.state.ep || y+1 === this.state.ep)){
-                let temp = 0;
                 ret.push(8*(x-1)+this.state.ep);
             }
         }
@@ -488,6 +487,7 @@ class Game extends React.Component{
             case 5:ret+="3";break;
             case 6:ret+="2";break;
             case 7:ret+="1";break;
+            default: ret+="Error";break;
         }
         return ret
     }
@@ -506,19 +506,19 @@ class Game extends React.Component{
         let x = Math.floor(num/8)
         let y = num%8
         let curBoard = this.state.displayBoard;
-        if(piece == 'b'){
+        if(piece === 'b'){
 
         }
-        if(piece == 'p'){
+        if(piece === 'p'){
 
         }
-        if(piece == 'k'){
+        if(piece === 'k'){
 
         }
-        if(piece == 'n'){
+        if(piece === 'n'){
 
         }
-        if(piece == 'r'){
+        if(piece === 'r'){
             let i = x-1;
             while(i>=0){
                 if(curBoard[i][y].piece.charAt(1) === piece.charAt(0) && curBoard[i][y].piece.charAt(0) === this.state.turn.toLowerCase().charAt(0)){
@@ -572,7 +572,7 @@ class Game extends React.Component{
                 }
             }
         }
-        if(piece =='q'){
+        if(piece === 'q'){
 
         }
         return ret;
@@ -622,7 +622,7 @@ class Game extends React.Component{
                     let pieceToMove = newBoard[Math.floor(this.state.selected/8)][this.state.selected%8].piece
                     enPass = false;
                     epNew = "na";
-                    let capture = (newBoard[Math.floor(num/8)][num%8].piece == "na")?"":"x"
+                    let capture = (newBoard[Math.floor(num/8)][num%8].piece === "na")?"":"x"
                     let attackPos = this.getAttackSquares(pieceToMove.substr(1,2), num)
                     enPass = (Math.floor(this.state.selected/8)===1 && Math.floor(num/8) === 3 && this.state.turn === "Black");
                     enPass = enPass || (Math.floor(this.state.selected/8)===6 && Math.floor(num/8) === 4 && this.state.turn==="White");
