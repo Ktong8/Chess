@@ -32,9 +32,15 @@ class Game extends React.Component{
             ep: -1,
             moves: tempmoves,
             moveNum: 0,
+            check: false,
+            checkMoves: [],
+            gameWon: false,
         }
         this.handleClick = this.handleClick.bind(this)
         this.computeSquares = this.computeSquares.bind(this)
+        this.moveClick = this.moveClick.bind(this)
+        this.inCheck = this.inCheck.bind(this)
+        this.moveInCheck = this.moveInCheck.bind(this)
     }
 
     render(){
@@ -47,7 +53,7 @@ class Game extends React.Component{
                 </div>
                 <div className = "board-move-container">
                     <div className = "board-container">
-                    <p>Turn: {this.state.turn}</p>
+                        <p>{this.state.gameWon?"Winner:":"Turn:"} {this.state.gameWon?(this.state.turn==='aBlack'?'White':'Black'):this.state.turn}{this.state.check?", Check!":""}</p>
                     {
                         curState.map((object)=>
                             <div className = "board-row"> {object.map((object2) => 
@@ -100,16 +106,23 @@ class Game extends React.Component{
                     ep: -1,
                     moves: tempmoves,
                     moveNum: 0,
+                    check: false,
+                    checkMoves: [],
+                    gameWon: false,
                 })
             }
-            console.log("asdfads:" + move.iden)
             let newBoard = prevState.gameBoard.slice(0,move.iden)
-            let newTurn = move.iden === 0?"White":"Black"
+            let newTurn = move.iden%2 === 1?"White":"Black"
             let newenPassant = move.enPass
             let newEp = move.ep
             let newMoves = prevState.moves.slice(0,Math.ceil((move.iden-1)/2))
-            newMoves[newMoves.length-1] = newMoves[newMoves.length-1].slice(0,(move.iden-1)%2)
+            newMoves[newMoves.length-1] = newMoves[newMoves.length-1].slice(0,(1+(move.iden)%2))
             let newMoveNum = move.iden-1
+            let newCheck  = this.inCheck(newBoard[newBoard.length-1], newTurn)
+            let newCheckMoves = []
+            if(newCheck){
+                newCheckMoves = this.checkMoves(newBoard[newBoard.length-1],newTurn)
+            }
             return({
                 gameBoard: newBoard,
                 turn: newTurn,
@@ -118,17 +131,60 @@ class Game extends React.Component{
                 ep:  newEp,
                 moves: newMoves,
                 moveNum: newMoveNum,
-                displayBoard: newBoard[newBoard.length-1]
+                displayBoard: newBoard[newBoard.length-1],
+                check: newCheck,
+                checkMoves: newCheckMoves,
+                gameWon: false,
             })
         }
         )
     }
 
-    computeSquares(num){ // computes possible moves
+    checkMoves(board, turn){ //moves doable in check, returns 2D array containing [piece, to] pairs
+        let ret = []
+        for(let i = 0 ;i<64; i++){
+            if(board[Math.floor(i/8)][i%8].piece.toLowerCase().charAt(0) === turn.toLowerCase().charAt(0)){
+                let list = this.computeSquares(i, board, turn)
+                for(let k = 0 ; k<list.length; k++){
+                    if(!this.moveInCheck(board, turn, i, list[k])){
+                        ret.push([i, list[k]])
+                    }
+                }
+            }
+        }
+        return ret
+    }
+
+    moveInCheck(board, turn, num1, num2){ //determines whether making num1 -> num2 results in a check
+        let orig1 = board[Math.floor(num1/8)][(num1%8)].piece
+        let orig2 = board[Math.floor(num2/8)][(num2%8)].piece
+        board[Math.floor(num2/8)][(num2%8)].piece = orig1
+        board[Math.floor(num1/8)][(num1%8)].piece = 'na'
+        console.log(turn, turn.charAt(0) === 'B'?'White':'Black')
+        let ret = this.inCheck(board, turn)
+        board[Math.floor(num2/8)][(num2%8)].piece = orig2
+        board[Math.floor(num1/8)][(num1%8)].piece = orig1
+        return ret
+    }
+
+    inCheck(board, turn){
+        for(let i = 0; i<64; i++){
+            let list = this.computeSquares(i,board, turn)
+            for(let k = 0; k<list.length; k++){
+                let piece = board[Math.floor(list[k]/8)][list[k]%8].piece
+                if(piece.charAt(1) === 'k' && piece.charAt(0) === turn.toLowerCase().charAt(0)){
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
+    computeSquares(num, board, turn){ // computes possible moves
         let x = Math.floor(num/8)
         let ret = []
         let y = num%8
-        let curBoard = this.state.displayBoard;
+        let curBoard = board; 
         let curSquare = curBoard[x][y];
         let curPiece = curSquare.piece;
         if(curPiece === 'br' || curPiece === 'wr'){
@@ -137,13 +193,13 @@ class Game extends React.Component{
                 if(curBoard[i][y].piece.charAt(0) === curPiece.charAt(0)){
                     break;
                 }
-                else if(curBoard[i][y].piece.charAt(0) === 'n'){
-                    ret.push(8*i+y)
-                    i--;
-                }
-                else if(curBoard[i][y].piece.charAt(0) !== (this.state.turn.toLowerCase().charAt(0))){
+                else if(curBoard[i][y].piece.charAt(0) === (turn.toLowerCase().charAt(0) === 'b'?'w':'b')){
                     ret.push(8*i+y)
                     break;
+                }
+                else{
+                    ret.push(8*i+y)
+                    i--
                 }
             }
             i = x+1;
@@ -151,13 +207,13 @@ class Game extends React.Component{
                 if(curBoard[i][y].piece.charAt(0) === curPiece.charAt(0)){
                     break;
                 }
-                else if(curBoard[i][y].piece.charAt(0) === 'n'){
-                    ret.push(8*i+y)
-                    i++;
-                }
-                else if(curBoard[i][y].piece.charAt(0) !== (this.state.turn.toLowerCase().charAt(0))){
+                else if(curBoard[i][y].piece.charAt(0) === (turn.toLowerCase().charAt(0) === 'b'?'w':'b')){
                     ret.push(8*i+y)
                     break;
+                }
+                else{
+                    ret.push(8*i+y)
+                    i++;
                 }
             }
             i = y-1;
@@ -165,13 +221,13 @@ class Game extends React.Component{
                 if(curBoard[x][i].piece.charAt(0) === curPiece.charAt(0)){
                     break;
                 }
-                else if(curBoard[x][i].piece.charAt(0) === 'n'){
-                    ret.push(8*x+i)
-                    i--;
-                }
-                else if(curBoard[i][y].piece.charAt(0)  !== (this.state.turn.toLowerCase().charAt(0))){
+                else if(curBoard[x][i].piece.charAt(0) === (turn.toLowerCase().charAt(0) === 'b'?'w':'b')){
                     ret.push(8*x+i)
                     break;
+                }
+                else{
+                    ret.push(8*x+i)
+                    i--;
                 }
             }
             i=y+1;
@@ -179,13 +235,13 @@ class Game extends React.Component{
                 if(curBoard[x][i].piece.charAt(0) === curPiece.charAt(0)){
                     break;
                 }
-                else if(curBoard[x][i].piece.charAt(0) === 'n'){
-                    ret.push(8*x+i)
-                    i++;
-                }
-                else if(curBoard[i][y].piece.charAt(0) !== (this.state.turn.toLowerCase().charAt(0))){
+                else if(curBoard[i][y].piece.charAt(0) === (turn.toLowerCase().charAt(0) === 'b'?'w':'b')){
                     ret.push(8*x+i)
                     break;
+                }
+                else{
+                    ret.push(8*x+i)
+                    i++
                 }
             }
         }
@@ -437,6 +493,7 @@ class Game extends React.Component{
 
         }
         else if(curPiece === 'bn' || curPiece === 'wn'){
+            
             if(x+2<8 && y+1 < 8 && curBoard[x+2][y+1].piece.charAt(0) !== curBoard[x][y].piece.charAt(0)){
                 ret.push(8*(x+2)+y+1);
             }
@@ -465,7 +522,7 @@ class Game extends React.Component{
         return ret;
     }
 
-    indexToPosition(index){
+    indexToPosition(index){ //Get the notation position from array index
         let ret = ""
         switch(index%8){
             case 0: ret += "a";break;
@@ -492,7 +549,7 @@ class Game extends React.Component{
         return ret
     }
 
-    getPiece(st){
+    getPiece(st){ //Get piece for notation
         let ret = ""
         switch(st){
             case 'p':break;
@@ -501,7 +558,7 @@ class Game extends React.Component{
         return ret;
     }
 
-    getAttackSquares(piece, num){
+    getAttackSquares(piece, num){ //Find squares that are attacking captured piece (For notation)
         let ret = []
         let x = Math.floor(num/8)
         let y = num%8
@@ -580,14 +637,6 @@ class Game extends React.Component{
 
     handleClick(num){
         this.setState(prevState => {
-            /*const newBoard = prevState.gameBoard.map(row => {
-                return row.map(element => {
-                    if(element.at === num){
-                        element.selected = !element.selected
-                    }
-                    return element
-                })
-            })*/
             console.log(this.state)
             const newBoard = []
             let enPass = this.state.enPassant;
@@ -609,16 +658,34 @@ class Game extends React.Component{
             }
             let newSelected = -1
             let nextTurn = prevState.turn;
-            if(curBoard[Math.floor(num/8)][num%8].piece.charAt(0) === prevState.turn.toLowerCase().charAt(0) || curBoard[Math.floor(num/8)][num%8].move){
-                if(!curBoard[Math.floor(num/8)][num%8].selected && !curBoard[Math.floor(num/8)][num%8].move){
-                    newSelected = num
-                    newBoard[Math.floor(num/8)][num%8].selected = true;
-                    let possibles = this.computeSquares(num);
-                    for(let i = 0; i<possibles.length; i++){
-                        newBoard[Math.floor(possibles[i]/8)][possibles[i]%8].move = true;
+            let newCheck = this.state.check
+            if(curBoard[Math.floor(num/8)][num%8].piece.charAt(0) === prevState.turn.toLowerCase().charAt(0) || curBoard[Math.floor(num/8)][num%8].move){ //If clicking valid square
+                if(!curBoard[Math.floor(num/8)][num%8].selected && !curBoard[Math.floor(num/8)][num%8].move){ //Select piece
+                    if(this.state.check){
+                        let possibles = []
+                        console.log(num + ", " + this.state.checkMoves.length)
+                        for(let i =0; i < this.state.checkMoves.length; i++){
+                            if(this.state.checkMoves[i][0] === num){
+                                possibles.push(this.state.checkMoves[i][1])
+                            }
+                        }
+                        if(possibles.length > 0){
+                            newSelected = num
+                            for(let i = 0;i < possibles.length; i++){
+                                newBoard[Math.floor(possibles[i]/8)][possibles[i]%8].move = true;
+                            }
+                        }
+                    }
+                    else{
+                        newSelected = num
+                        newBoard[Math.floor(num/8)][num%8].selected = true;
+                        let possibles = this.computeSquares(num, this.state.displayBoard, this.state.turn);
+                        for(let i = 0; i<possibles.length; i++){
+                            newBoard[Math.floor(possibles[i]/8)][possibles[i]%8].move = true;
+                        }
                     }
                 }
-                else if(curBoard[Math.floor(num/8)][num%8].move){
+                else if(curBoard[Math.floor(num/8)][num%8].move){ //If moving
                     let pieceToMove = newBoard[Math.floor(this.state.selected/8)][this.state.selected%8].piece
                     enPass = false;
                     epNew = "na";
@@ -653,7 +720,18 @@ class Game extends React.Component{
                     nextTurn = prevState.turn==="White"?"Black":"White"
                     newMoveNum++;
                     prevState.gameBoard.push(newBoard);
+                    newCheck = this.inCheck(newBoard, nextTurn)
                 }
+            }
+            let newCheckMoves = []
+            if(newCheck){
+                newCheckMoves = this.checkMoves(newBoard, nextTurn)
+            }
+            let newGameWon = this.state.gameWon
+            if(newCheck && newCheckMoves.length === 0){
+                newGameWon = true
+                nextTurn = 'a' + nextTurn
+                newCheck = false
             }
             return{
                 gameBoard: prevState.gameBoard,
@@ -663,7 +741,10 @@ class Game extends React.Component{
                 ep: epNew,
                 moves: tempMoves,
                 moveNum: newMoveNum,
-                displayBoard: newBoard
+                displayBoard: newBoard,
+                check: newCheck,
+                checkMoves: newCheckMoves,
+                gameWon: newGameWon,
             }
         });
     }
